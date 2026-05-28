@@ -1,0 +1,5 @@
+# Ignore everything except the app builder prototype
+*
+!.gitignore
+!asana-tables.html
+!README.md
