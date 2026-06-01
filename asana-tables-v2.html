@@ -2812,11 +2812,9 @@
                 const firstRole = _activeRole || data.roles[0].id;
                 if (!_activeRole) _activeRole = firstRole;
 
-                // Topbar: one tab per role
+                // Topbar: clear tabs in role mode (navigation happens via sidenav)
                 if (tabsEl) {
-                    tabsEl.innerHTML = data.roles.map(r =>
-                        `<button class="cvs-app-tab${r.id === _activeRole ? ' active' : ''}" data-role-id="${r.id}" data-view-type="role-${r.id}">${r.label}</button>`
-                    ).join('');
+                    tabsEl.innerHTML = '';
                 }
 
                 // Sidenav: roles + configure
@@ -3297,18 +3295,18 @@
             switchToView(tab.dataset.viewType || 'records');
         });
 
-        // Wire up role clicks in sidenav (v2 role mode)
+        // Wire up role clicks in sidenav (v2 role mode) — persona view items
         document.addEventListener('click', e => {
-            const item = e.target.closest('.cvs-sidenav-item[data-sv-role]');
+            const item = e.target.closest('.cvs-persona-view-item[data-sv-role]');
             if (!item) return;
             switchToRole(item.dataset.svRole);
         });
 
-        // Wire up role tab clicks (v2 role mode)
+        // Wire up role clicks in sidenav (v2 role mode) — legacy sidenav items
         document.addEventListener('click', e => {
-            const tab = e.target.closest('.cvs-app-tab[data-role-id]');
-            if (!tab) return;
-            switchToRole(tab.dataset.roleId);
+            const item = e.target.closest('.cvs-sidenav-item[data-sv-role]');
+            if (!item) return;
+            switchToRole(item.dataset.svRole);
         });
 
         // Wire up sidenav item clicks (delegated — use data-sv-view)
