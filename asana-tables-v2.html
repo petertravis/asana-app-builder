@@ -688,6 +688,21 @@
         .cvs-sidenav-item.active { background: var(--bg-active); color: var(--text); font-weight: 500; }
         .cvs-sidenav-item svg { flex-shrink: 0; }
         .cvs-sidenav-count { margin-left: auto; font-size: 10px; color: var(--text-weak); }
+        /* Role avatars in v2 sidenav */
+        .cvs-role-avatar {
+            width: 20px; height: 20px; border-radius: 5px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 9px; font-weight: 700; color: #fff; letter-spacing: 0;
+        }
+        .cvs-role-stat-row {
+            display: flex; gap: 8px; padding: 8px 10px 4px;
+        }
+        .cvs-role-stat {
+            flex: 1; background: var(--bg-medium); border-radius: 6px;
+            padding: 7px 8px; text-align: center;
+        }
+        .cvs-role-stat-num { font-size: 16px; font-weight: 700; color: var(--text); line-height: 1; }
+        .cvs-role-stat-label { font-size: 10px; color: var(--text-weak); margin-top: 2px; }
         .cvs-sidenav-section {
             padding: 10px 12px 3px; font-size: 10px; font-weight: 700;
             letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-weak);
@@ -2245,7 +2260,7 @@
                             </svg>
                         </div>
 
-                        <h1 class="canvas-prompt-headline">What do you want to build?</h1>
+                        <h1 class="canvas-prompt-headline">Map your process.<br>Build for everyone in it.</h1>
 
                         <!-- Input card -->
                         <div class="canvas-input-card">
@@ -2265,7 +2280,7 @@
                             </div>
                         </div>
 
-                        <p class="canvas-helper-text">Building apps does not use AI credits. <a href="#">Learn more</a></p>
+                        <p class="canvas-helper-text">Describe your workflow. We'll identify the roles and build tailored views for each person.</p>
 
                         <div class="canvas-or-divider">
                             <div class="canvas-or-line"></div>
@@ -2275,29 +2290,29 @@
 
                         <button class="canvas-scratch-btn" id="canvas-scratch-btn">Start from scratch</button>
 
-                        <span class="canvas-featured-label">Featured</span>
+                        <span class="canvas-featured-label">Featured processes</span>
 
                         <div class="canvas-feat-grid">
-                            <div class="canvas-feat-card" data-desc="Build a sales deal room with account fields, linked contacts, activity feed, and AI-generated deal summary">
-                                <div class="canvas-feat-icon">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
+                            <div class="canvas-feat-card" data-desc="Campaign design process for a marketing team — CMO sees high-level status, strategy plans the pipeline, creative leads triage requests, designers track their work">
+                                <div class="canvas-feat-icon" style="background:#fef3c7">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
                                 </div>
-                                <div class="canvas-feat-title">Sales deal room</div>
-                                <div class="canvas-feat-desc">Account fields, linked contacts, activity feed, and AI deal summary</div>
+                                <div class="canvas-feat-title">Campaign design</div>
+                                <div class="canvas-feat-desc">CMO · Strategy · Creative Lead · Designer — 4 roles, 4 views</div>
                             </div>
-                            <div class="canvas-feat-card" data-desc="Create a job requisition tracker with candidate pipeline, linked interviews, and multi-stage approval workflow">
-                                <div class="canvas-feat-icon">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                            <div class="canvas-feat-card" data-desc="Product launch process — exec sponsor tracks status, product manager owns the roadmap, engineering leads execute, marketing prepares go-to-market">
+                                <div class="canvas-feat-icon" style="background:#ede9fe">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
                                 </div>
-                                <div class="canvas-feat-title">Job requisition tracker</div>
-                                <div class="canvas-feat-desc">Candidate pipeline, linked interviews, and approval workflow</div>
+                                <div class="canvas-feat-title">Product launch</div>
+                                <div class="canvas-feat-desc">Exec · PM · Engineering · Marketing — cross-functional launch plan</div>
                             </div>
-                            <div class="canvas-feat-card" data-desc="Build a dog grooming appointment tracker with breed, owner info, groomer assignments, service history, and scheduling">
-                                <div class="canvas-feat-icon">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5.172C10 3.782 8.423 2.679 6.5 3c-2.823.47-4.113 6.006-4 7 .08.703 1.725 1.722 3.656 1 1.261-.472 1.96-1.45 2.344-2.5"/><path d="M14.267 5.172c0-1.39 1.577-2.493 3.5-2.172 2.823.47 4.113 6.006 4 7-.08.703-1.725 1.722-3.656 1-1.261-.472-1.96-1.45-2.344-2.5"/><path d="M8 14v.5"/><path d="M16 14v.5"/><path d="M11.25 16.25h1.5L12 17l-.75-.75Z"/><path d="M4.42 11.247A13.152 13.152 0 0 0 4 14.556C4 18.728 7.582 21 12 21s8-2.272 8-6.444c0-1.061-.162-2.2-.493-3.309m-9.243-6.082A8.801 8.801 0 0 1 12 5c.78 0 1.5.108 2.161.306"/></svg>
+                            <div class="canvas-feat-card" data-desc="Client delivery process — account manager owns the relationship, creative team executes deliverables, client reviews and approves work">
+                                <div class="canvas-feat-icon" style="background:#dcfce7">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
                                 </div>
-                                <div class="canvas-feat-title">Dog grooming app</div>
-                                <div class="canvas-feat-desc">Breed profiles, owner info, groomer assignments, and appointment history</div>
+                                <div class="canvas-feat-title">Client delivery</div>
+                                <div class="canvas-feat-desc">Account Manager · Creative · Client — shared visibility, role-based access</div>
                             </div>
                         </div>
 
@@ -2536,12 +2551,12 @@
 
         // ── Typing animation ──
         const TYPING_PROMPTS = [
-            'Build a sales deal room with account fields, linked contacts, and AI summary',
-            'Create a job requisition tracker with candidate pipeline and approval workflow',
-            'Track legal matters with document sections, contacts, and milestone tracker',
-            'Build a vendor onboarding app with checklists, documents, and approval status',
-            'Design an incident report system with timeline sections and severity fields',
-            'Create a marketing campaign brief with linked assets and team assignments',
+            'Campaign design process — CMO, strategy team, creative leads, and individual designers',
+            'Product launch — execs track status, PMs manage the roadmap, engineers execute',
+            'Client delivery — account managers, creative teams, and clients each see what they need',
+            'Hiring pipeline — recruiters triage, hiring managers review, candidates track progress',
+            'Budget planning — finance sees rollups, team leads see their allocations, execs see summary',
+            'Event production — event lead coordinates, vendors deliver, stakeholders see milestones',
         ];
         let typingTimer = null, typingIdx = 0, typingChar = 0, typingDeleting = false;
 
@@ -2731,6 +2746,8 @@
                 : name.substring(0, 2).toUpperCase();
         }
 
+        let _activeRole = null; // tracks which role is selected in role-based mode
+
         function updateCanvasPreviewNav(data) {
             const appName = document.getElementById('builder-app-name')?.textContent || 'My App';
             const tabLabel = data.tabLabel || 'Records';
@@ -2746,72 +2763,117 @@
             if (miniEntry) miniEntry.style.display = 'flex';
             if (miniBadge) { miniBadge.style.background = color; miniBadge.textContent = initials; }
             if (miniLabel) {
-                // Truncate to first word for space
                 miniLabel.textContent = appName.split(' ')[0];
                 miniLabel.title = appName;
             }
 
-            // ── Topbar tabs — only show views that have been added ──
-            const ALL_VIEW_DEFS = [
-                { type:'records', label:tabLabel },
-                { type:'board',   label:'Board' },
-                { type:'cards',   label:'Cards' },
-                { type:'rules',   label:'Rules' },
-                { type:'reports', label:'Reports' },
-            ];
-            const visibleTabs = ALL_VIEW_DEFS.filter(v =>
-                v.type === 'records' || v.type === 'rules' || v.type === 'reports' || _canvasViews.includes(v.type)
-            );
             const tabsEl = document.getElementById('cvs-app-tabs');
-            if (tabsEl) {
-                tabsEl.innerHTML = visibleTabs.map((v, i) =>
-                    `<button class="cvs-app-tab${i===0?' active':''}" data-view-type="${v.type}">${v.label}</button>`
-                ).join('');
-            }
-
-            // ── Sidebar panel — like Asana's Tables sidebar ──
             const sv = document.getElementById('cvs-sidenav');
-            if (!sv) return;
-            const VIEW_ICONS = {
-                records: `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="width:13px;height:13px"><rect x="1" y="3" width="14" height="10" rx="1.5"/><line x1="1" y1="7" x2="15" y2="7"/><line x1="5" y1="7" x2="5" y2="13"/></svg>`,
-                board:   `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="width:13px;height:13px"><rect x="1" y="2" width="5" height="12" rx="1"/><rect x="8" y="2" width="5" height="8" rx="1"/></svg>`,
-                cards:   `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="width:13px;height:13px"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>`,
-            };
-            const activeViewItems = [
-                { type:'records', label:tabLabel, count:rowCount },
-                ...(_canvasViews.includes('board') ? [{ type:'board', label:'Board' }] : []),
-                ...(_canvasViews.includes('cards') ? [{ type:'cards', label:'Cards' }] : []),
-            ];
-            sv.innerHTML = `
-                <div class="cvs-sidenav-head">
-                    <div class="cvs-sidenav-badge" style="background:${color}">${initials}</div>
-                    <span>${appName}</span>
-                </div>
-                <div class="cvs-sidenav-item">
-                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="width:13px;height:13px"><path d="M2 6L8 2L14 6V14H10V10H6V14H2V6Z"/></svg>
-                    Home
-                </div>
-                <div class="cvs-sidenav-hr"></div>
-                <div class="cvs-sidenav-section">Views</div>
-                ${activeViewItems.map((v, i) => `
-                <div class="cvs-sidenav-item${i===0?' active':''}" data-sv-view="${v.type}">
-                    ${VIEW_ICONS[v.type]}
-                    ${v.label}
-                    ${v.count != null ? `<span class="cvs-sidenav-count">${v.count}</span>` : ''}
-                </div>`).join('')}
-                <div class="cvs-sidenav-hr"></div>
-                <div class="cvs-sidenav-section">Automate</div>
-                <div class="cvs-sidenav-item" data-sv-view="rules">
-                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="width:13px;height:13px"><path d="M9 2L5 9h5l-3 5 6-8H12l3-4H9z"/></svg>
-                    Rules
-                    <span class="cvs-sidenav-count">0</span>
-                </div>
-                <div class="cvs-sidenav-hr"></div>
-                <div class="cvs-sidenav-section">Reports</div>
-                <div class="cvs-sidenav-item" data-sv-view="analytics">
-                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="width:13px;height:13px"><rect x="1" y="8" width="3" height="7" rx="0.5"/><rect x="6" y="5" width="3" height="10" rx="0.5"/><rect x="11" y="2" width="3" height="13" rx="0.5"/></svg>
-                    Analytics
-                </div>`;
+
+            if (data.roles && data.roles.length) {
+                // ── ROLE-BASED MODE ──
+                const firstRole = _activeRole || data.roles[0].id;
+                if (!_activeRole) _activeRole = firstRole;
+
+                // Topbar: one tab per role
+                if (tabsEl) {
+                    tabsEl.innerHTML = data.roles.map(r =>
+                        `<button class="cvs-app-tab${r.id === _activeRole ? ' active' : ''}" data-role-id="${r.id}" data-view-type="role-${r.id}">${r.label}</button>`
+                    ).join('');
+                }
+
+                // Sidenav: roles + configure
+                if (!sv) return;
+                sv.innerHTML = `
+                    <div class="cvs-sidenav-head">
+                        <div class="cvs-sidenav-badge" style="background:${color}">${initials}</div>
+                        <span>${appName}</span>
+                    </div>
+                    <div class="cvs-sidenav-item">
+                        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="width:13px;height:13px"><path d="M2 6L8 2L14 6V14H10V10H6V14H2V6Z"/></svg>
+                        Overview
+                    </div>
+                    <div class="cvs-sidenav-hr"></div>
+                    <div class="cvs-sidenav-section">Roles</div>
+                    ${data.roles.map(r => `
+                    <div class="cvs-sidenav-item${r.id === _activeRole ? ' active' : ''}" data-sv-role="${r.id}" style="gap:8px">
+                        <div class="cvs-role-avatar" style="background:${r.color}">${r.label.split(' ').map(w=>w[0]).join('').slice(0,2)}</div>
+                        <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.label}</span>
+                    </div>`).join('')}
+                    <div class="cvs-sidenav-hr"></div>
+                    <div class="cvs-sidenav-section">Configure</div>
+                    <div class="cvs-sidenav-item" data-sv-view="rules">
+                        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="width:13px;height:13px"><path d="M9 2L5 9h5l-3 5 6-8H12l3-4H9z"/></svg>
+                        Rules
+                        <span class="cvs-sidenav-count">0</span>
+                    </div>
+                    <div class="cvs-sidenav-item" data-sv-view="analytics">
+                        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="width:13px;height:13px"><rect x="1" y="8" width="3" height="7" rx="0.5"/><rect x="6" y="5" width="3" height="10" rx="0.5"/><rect x="11" y="2" width="3" height="13" rx="0.5"/></svg>
+                        Analytics
+                    </div>`;
+
+                // Render the active role's view
+                switchToRole(_activeRole, data);
+
+            } else {
+                // ── STANDARD (v1-style) MODE ──
+                const ALL_VIEW_DEFS = [
+                    { type:'records', label:tabLabel },
+                    { type:'board',   label:'Board' },
+                    { type:'cards',   label:'Cards' },
+                    { type:'rules',   label:'Rules' },
+                    { type:'reports', label:'Reports' },
+                ];
+                const visibleTabs = ALL_VIEW_DEFS.filter(v =>
+                    v.type === 'records' || v.type === 'rules' || v.type === 'reports' || _canvasViews.includes(v.type)
+                );
+                if (tabsEl) {
+                    tabsEl.innerHTML = visibleTabs.map((v, i) =>
+                        `<button class="cvs-app-tab${i===0?' active':''}" data-view-type="${v.type}">${v.label}</button>`
+                    ).join('');
+                }
+                if (!sv) return;
+                const VIEW_ICONS = {
+                    records: `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="width:13px;height:13px"><rect x="1" y="3" width="14" height="10" rx="1.5"/><line x1="1" y1="7" x2="15" y2="7"/><line x1="5" y1="7" x2="5" y2="13"/></svg>`,
+                    board:   `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="width:13px;height:13px"><rect x="1" y="2" width="5" height="12" rx="1"/><rect x="8" y="2" width="5" height="8" rx="1"/></svg>`,
+                    cards:   `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="width:13px;height:13px"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>`,
+                };
+                const activeViewItems = [
+                    { type:'records', label:tabLabel, count:rowCount },
+                    ...(_canvasViews.includes('board') ? [{ type:'board', label:'Board' }] : []),
+                    ...(_canvasViews.includes('cards') ? [{ type:'cards', label:'Cards' }] : []),
+                ];
+                sv.innerHTML = `
+                    <div class="cvs-sidenav-head">
+                        <div class="cvs-sidenav-badge" style="background:${color}">${initials}</div>
+                        <span>${appName}</span>
+                    </div>
+                    <div class="cvs-sidenav-item">
+                        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="width:13px;height:13px"><path d="M2 6L8 2L14 6V14H10V10H6V14H2V6Z"/></svg>
+                        Home
+                    </div>
+                    <div class="cvs-sidenav-hr"></div>
+                    <div class="cvs-sidenav-section">Views</div>
+                    ${activeViewItems.map((v, i) => `
+                    <div class="cvs-sidenav-item${i===0?' active':''}" data-sv-view="${v.type}">
+                        ${VIEW_ICONS[v.type]}
+                        ${v.label}
+                        ${v.count != null ? `<span class="cvs-sidenav-count">${v.count}</span>` : ''}
+                    </div>`).join('')}
+                    <div class="cvs-sidenav-hr"></div>
+                    <div class="cvs-sidenav-section">Automate</div>
+                    <div class="cvs-sidenav-item" data-sv-view="rules">
+                        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="width:13px;height:13px"><path d="M9 2L5 9h5l-3 5 6-8H12l3-4H9z"/></svg>
+                        Rules
+                        <span class="cvs-sidenav-count">0</span>
+                    </div>
+                    <div class="cvs-sidenav-hr"></div>
+                    <div class="cvs-sidenav-section">Reports</div>
+                    <div class="cvs-sidenav-item" data-sv-view="analytics">
+                        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="width:13px;height:13px"><rect x="1" y="8" width="3" height="7" rx="0.5"/><rect x="6" y="5" width="3" height="10" rx="0.5"/><rect x="11" y="2" width="3" height="13" rx="0.5"/></svg>
+                        Analytics
+                    </div>`;
+            }
         }
 
         function renderTable(data, animate) {
@@ -2977,6 +3039,177 @@
 
         function switchToTableView() { switchToView('records'); }
 
+        // ── Role-based view switching (v2) ──────────────────────────────
+        function switchToRole(roleId, data) {
+            if (!data) data = _tableData;
+            if (!data || !data.roles) return;
+            _activeRole = roleId;
+            const role = data.roles.find(r => r.id === roleId);
+            if (!role) return;
+
+            // Update active states in sidenav + tabs
+            document.querySelectorAll('.cvs-sidenav-item[data-sv-role]').forEach(el => {
+                el.classList.toggle('active', el.dataset.svRole === roleId);
+            });
+            document.querySelectorAll('.cvs-app-tab[data-role-id]').forEach(el => {
+                el.classList.toggle('active', el.dataset.roleId === roleId);
+            });
+
+            // Show alt view div
+            const tableDiv = document.getElementById('canvas-view-table');
+            const alt = document.getElementById('canvas-view-alt');
+            tableDiv.style.display = 'none';
+            alt.style.display = '';
+
+            if (role.viewType === 'summary') renderRoleSummary(data, role, alt);
+            else if (role.viewType === 'pipeline') renderRolePipeline(data, role, alt);
+            else if (role.viewType === 'triage') renderRoleTriage(data, role, alt);
+            else if (role.viewType === 'mywork') renderRoleMyWork(data, role, alt);
+            else renderRoleTriage(data, role, alt); // fallback
+        }
+
+        function _roleHeader(role, subtitle) {
+            return `<div style="display:flex;align-items:center;gap:10px;padding:16px 20px 12px;border-bottom:1px solid var(--border);flex-shrink:0">
+                <div class="cvs-role-avatar" style="background:${role.color};width:28px;height:28px;border-radius:7px;font-size:11px">${role.label.split(' ').map(w=>w[0]).join('').slice(0,2)}</div>
+                <div>
+                    <div style="font-size:13px;font-weight:600;color:var(--text)">${role.label}</div>
+                    <div style="font-size:11px;color:var(--text-weak)">${subtitle}</div>
+                </div>
+            </div>`;
+        }
+
+        function renderRoleSummary(data, role, el) {
+            // CMO: high-level stat cards + key campaign cards
+            const rows = data.rows || [];
+            const live = rows.filter(r => r[3] && r[3].label === 'Live').length;
+            const inprog = rows.filter(r => r[3] && r[3].label === 'In Progress').length;
+            const planned = rows.filter(r => r[3] && (r[3].label === 'Planning' || r[3].label === 'Draft' || r[3].label === 'Awaiting Brief')).length;
+            const totalBudget = rows.reduce((sum, r) => {
+                const b = typeof r[5] === 'string' ? parseInt(r[5].replace(/[$,]/g,'')) : 0;
+                return sum + (isNaN(b) ? 0 : b);
+            }, 0);
+
+            el.style.cssText = 'overflow-y:auto;display:flex;flex-direction:column;';
+            el.innerHTML = _roleHeader(role, 'Executive summary · read-only') +
+            `<div style="padding:16px 20px;display:flex;flex-direction:column;gap:16px">
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+                    <div class="cvs-role-stat"><div class="cvs-role-stat-num">${inprog}</div><div class="cvs-role-stat-label">In Progress</div></div>
+                    <div class="cvs-role-stat"><div class="cvs-role-stat-num" style="color:#059669">${live}</div><div class="cvs-role-stat-label">Live</div></div>
+                    <div class="cvs-role-stat"><div class="cvs-role-stat-num" style="color:var(--text-weak)">${planned}</div><div class="cvs-role-stat-label">Planned</div></div>
+                </div>
+                <div style="font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--text-weak);margin-bottom:-8px">Key campaigns</div>
+                ${rows.slice(0,3).map(r => {
+                    const status = r[3] && r[3].label ? r[3].label : '—';
+                    const cls = r[3] && r[3].cls ? r[3].cls : '';
+                    return `<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+                        <div>
+                            <div style="font-size:13px;font-weight:500;color:var(--text)">${r[1]}</div>
+                            <div style="font-size:11.5px;color:var(--text-weak);margin-top:2px">${r[2]} · ${r[6] || ''}</div>
+                        </div>
+                        <span class="cbadge ${cls}" style="flex-shrink:0">${status}</span>
+                    </div>`;
+                }).join('')}
+                <div style="text-align:center;font-size:12px;color:var(--text-weak);padding-top:4px">Total budget: <strong style="color:var(--text)">$${totalBudget.toLocaleString()}</strong></div>
+            </div>`;
+        }
+
+        function renderRolePipeline(data, role, el) {
+            // Strategy: board-style pipeline by stage
+            const rows = data.rows || [];
+            const stages = [
+                { key:'planning', label:'Planning', classes:['todo','draft'] },
+                { key:'inprogress', label:'In Progress', classes:['in-progress','proposal','awaiting'] },
+                { key:'live', label:'Live / Done', classes:['done','live'] },
+            ];
+            const getStage = row => {
+                const cls = row[3] && row[3].cls ? row[3].cls.toLowerCase() : '';
+                const lbl = row[3] && row[3].label ? row[3].label.toLowerCase() : '';
+                if (cls === 'done' || lbl === 'live') return 'live';
+                if (cls === 'in-progress' || cls === 'proposal' || lbl.includes('progress') || lbl.includes('review') || lbl.includes('brief')) return 'inprogress';
+                return 'planning';
+            };
+
+            el.style.cssText = 'overflow:hidden;display:flex;flex-direction:column;';
+            el.innerHTML = _roleHeader(role, 'Future & planned campaigns · strategy access') +
+            `<div style="flex:1;overflow-x:auto;overflow-y:hidden;padding:16px 20px;display:flex;gap:12px;min-height:0">
+                ${stages.map(stage => {
+                    const stageRows = rows.filter(r => getStage(r) === stage.key);
+                    return `<div style="flex:1;min-width:160px;display:flex;flex-direction:column;gap:8px">
+                        <div style="font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--text-weak);padding-bottom:4px;border-bottom:2px solid ${stage.key==='live'?'#059669':stage.key==='inprogress'?'#4f46e5':'var(--border)'}">${stage.label} <span style="font-weight:400;opacity:.6">${stageRows.length}</span></div>
+                        ${stageRows.map(r => `<div style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px 11px">
+                            <div style="font-size:12.5px;font-weight:500;color:var(--text);margin-bottom:4px">${r[1]}</div>
+                            <div style="font-size:11px;color:var(--text-weak)">${r[2]}</div>
+                            <div style="font-size:11px;color:var(--text-weak);margin-top:4px">Launch: ${r[6] || '—'}</div>
+                        </div>`).join('')}
+                        ${stageRows.length === 0 ? `<div style="border:1.5px dashed var(--border);border-radius:6px;padding:16px;text-align:center;font-size:11.5px;color:var(--text-weak)">No campaigns</div>` : ''}
+                    </div>`;
+                }).join('')}
+            </div>`;
+        }
+
+        function renderRoleTriage(data, role, el) {
+            // Creative Lead: dense table with all fields, triage focus
+            const rows = data.rows || [];
+            const headers = (data.headers || []).slice(1); // skip row-num col
+            el.style.cssText = 'overflow:hidden;display:flex;flex-direction:column;';
+            el.innerHTML = _roleHeader(role, 'All inflight requests · triage access') +
+            `<div style="flex:1;overflow:auto">
+                <table style="width:100%;border-collapse:collapse;font-size:12.5px">
+                    <thead>
+                        <tr style="border-bottom:1px solid var(--border);background:var(--bg-medium)">
+                            ${headers.map(h => `<th style="padding:7px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--text-weak);letter-spacing:.03em;white-space:nowrap">${h}</th>`).join('')}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rows.map(r => `<tr style="border-bottom:1px solid var(--border)" class="tbl-row-hover">
+                            ${r.slice(1).map((cell, ci) => {
+                                if (cell && typeof cell === 'object' && cell.cls)
+                                    return `<td style="padding:7px 12px;white-space:nowrap"><span class="cbadge ${cell.cls}">${cell.label}</span></td>`;
+                                return `<td style="padding:7px 12px;color:var(--text);white-space:nowrap">${cell || '—'}</td>`;
+                            }).join('')}
+                        </tr>`).join('')}
+                    </tbody>
+                </table>
+            </div>`;
+        }
+
+        function renderRoleMyWork(data, role, el) {
+            // Creative: simplified, filtered to relevant items (show in-progress / assigned work)
+            const rows = (data.rows || []).filter(r => {
+                const cls = r[3] && r[3].cls ? r[3].cls : '';
+                return cls === 'in-progress' || cls === 'todo';
+            });
+            const headers = ['Campaign', 'Status', 'Launch Date'];
+            const colIdx = [1, 3, 6]; // which columns from raw row to show
+
+            el.style.cssText = 'overflow:hidden;display:flex;flex-direction:column;';
+            el.innerHTML = _roleHeader(role, 'Your assigned work · limited access') +
+            `<div style="padding:10px 20px 8px;display:flex;align-items:center;gap:8px">
+                <div style="width:24px;height:24px;border-radius:50%;background:${role.color};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff">SC</div>
+                <span style="font-size:12.5px;font-weight:500;color:var(--text)">Sarah C.</span>
+                <span style="font-size:12px;color:var(--text-weak)">— ${rows.length} active campaigns</span>
+            </div>
+            <div style="flex:1;overflow:auto">
+                <table style="width:100%;border-collapse:collapse;font-size:12.5px">
+                    <thead>
+                        <tr style="border-bottom:1px solid var(--border);background:var(--bg-medium)">
+                            ${headers.map(h => `<th style="padding:7px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--text-weak);letter-spacing:.03em">${h}</th>`).join('')}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rows.map(r => `<tr style="border-bottom:1px solid var(--border)" class="tbl-row-hover">
+                            ${colIdx.map(ci => {
+                                const cell = r[ci];
+                                if (cell && typeof cell === 'object' && cell.cls)
+                                    return `<td style="padding:7px 12px"><span class="cbadge ${cell.cls}">${cell.label}</span></td>`;
+                                return `<td style="padding:7px 12px;color:var(--text)">${cell || '—'}</td>`;
+                            }).join('')}
+                        </tr>`).join('')}
+                    </tbody>
+                </table>
+            </div>`;
+        }
+
         // addViewTab: adds the view to _canvasViews, re-renders nav, then switches to it
         function addViewTab(label, type) {
             const t = (type === 'list') ? 'board' : type;
@@ -3004,6 +3237,20 @@
             const tab = e.target.closest('.cvs-app-tab');
             if (!tab) return;
             switchToView(tab.dataset.viewType || 'records');
+        });
+
+        // Wire up role clicks in sidenav (v2 role mode)
+        document.addEventListener('click', e => {
+            const item = e.target.closest('.cvs-sidenav-item[data-sv-role]');
+            if (!item) return;
+            switchToRole(item.dataset.svRole);
+        });
+
+        // Wire up role tab clicks (v2 role mode)
+        document.addEventListener('click', e => {
+            const tab = e.target.closest('.cvs-app-tab[data-role-id]');
+            if (!tab) return;
+            switchToRole(tab.dataset.roleId);
         });
 
         // Wire up sidenav item clicks (delegated — use data-sv-view)
@@ -3520,15 +3767,21 @@
             };
             if (t.includes('marketing')||t.includes('campaign')||t.includes('brief')||t.includes('launch')) return {
                 name:'Campaign Hub',
-                workflows:['Plan campaign briefs','Track asset delivery','Assign team roles','Monitor launch timeline'],
+                workflows:['Identify key stakeholders','Define what each role needs to see','Build tailored views per person','Connect the process end-to-end'],
                 tabLabel:'Campaigns',
-                headers:['','Campaign','Channel','Status','Budget','Launch Date'],
+                headers:['','Campaign','Channel','Status','Owner','Budget','Launch Date'],
+                roles:[
+                    { id:'cmo',            label:'CMO',           color:'#dc2626', desc:'High-level status of key campaigns',        viewType:'summary'  },
+                    { id:'strategy',       label:'Strategy',      color:'#7c3aed', desc:'Pipeline of future & planned work',         viewType:'pipeline' },
+                    { id:'creative-lead',  label:'Creative Lead', color:'#d97706', desc:'Triage inflight creative requests',         viewType:'triage'   },
+                    { id:'creative',       label:'Creative',      color:'#059669', desc:'My assigned campaigns and tasks',           viewType:'mywork'   },
+                ],
                 rows:[
-                    [1,'Q3 Brand Refresh','Multi-channel',{cls:'in-progress',label:'In Progress'},'$45,000','Jul 1'],
-                    [2,'Product Launch v2.0','Email + Social',{cls:'todo',label:'Planning'},'$22,000','Aug 15'],
-                    [3,'Partner Co-Marketing','Paid + SEO',{cls:'proposal',label:'Awaiting Brief'},'$18,500','Sep 1'],
-                    [4,'Holiday Promo 2026','Email',{cls:'todo',label:'Draft'},'$12,000','Nov 1'],
-                    [5,'Analyst Relations','PR',{cls:'done',label:'Live'},'$8,000','May 1'],
+                    [1,'Q3 Brand Refresh','Multi-channel',{cls:'in-progress',label:'In Progress'},'Sarah K.','$45,000','Jul 1'],
+                    [2,'Product Launch v2.0','Email + Social',{cls:'todo',label:'Planning'},'Chris Y.','$22,000','Aug 15'],
+                    [3,'Partner Co-Marketing','Paid + SEO',{cls:'proposal',label:'Awaiting Brief'},'Lee P.','$18,500','Sep 1'],
+                    [4,'Holiday Promo 2026','Email',{cls:'todo',label:'Draft'},'Sam K.','$12,000','Nov 1'],
+                    [5,'Analyst Relations','PR',{cls:'done',label:'Live'},'Sarah K.','$8,000','May 1'],
                 ]
             };
             if (t.includes('incident')||t.includes('outage')||t.includes('it ops')||t.includes('bug')||t.includes('support ticket')) return {
@@ -3613,9 +3866,14 @@
             setTimeout(() => {
                 const ai = document.createElement('div');
                 ai.className = 'canvas-ai-text';
-                ai.innerHTML = `<p>Based on your prompt I will consider the following workflows:</p>
-                    <ul>${data.workflows.map(w=>`<li>${w}</li>`).join('')}</ul>
-                    <p>I'm crafting your app now — you'll see a preview in just a moment.</p>`;
+                const hasRoles = data.roles && data.roles.length > 0;
+                ai.innerHTML = hasRoles
+                    ? `<p>I identified <strong>${data.roles.length} roles</strong> in this process:</p>
+                       <ul>${data.roles.map(r=>`<li><strong>${r.label}</strong> — ${r.desc}</li>`).join('')}</ul>
+                       <p>Building tailored views for each person now.</p>`
+                    : `<p>Based on your prompt I will consider the following workflows:</p>
+                       <ul>${data.workflows.map(w=>`<li>${w}</li>`).join('')}</ul>
+                       <p>I'm crafting your app now — you'll see a preview in just a moment.</p>`;
                 chatBody.appendChild(ai);
                 chatBody.scrollTop = chatBody.scrollHeight;
             }, 650);
