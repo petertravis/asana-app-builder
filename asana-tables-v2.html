@@ -2293,7 +2293,7 @@
                         <span class="canvas-featured-label">Featured processes</span>
 
                         <div class="canvas-feat-grid">
-                            <div class="canvas-feat-card" data-desc="Campaign design process for a marketing team — CMO sees high-level status, strategy plans the pipeline, creative leads triage requests, designers track their work">
+                            <div class="canvas-feat-card" data-desc="Campaign design process for a marketing team — CMO sees high-level status, strategy plans future campaigns, creative leads triage requests, designers track their work">
                                 <div class="canvas-feat-icon" style="background:#fef3c7">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
                                 </div>
@@ -3700,6 +3700,26 @@
 
         function generateTableData(t) {
             t = t.toLowerCase();
+            // Campaign/roles check FIRST — must come before sales (which also catches 'pipeline')
+            if (t.includes('campaign')||t.includes('marketing')||t.includes('brief')||t.includes('cmo')||t.includes('creative lead')||t.includes('design process')||t.includes('roles')) return {
+                name:'Campaign Hub',
+                workflows:['Identify key stakeholders','Define what each role needs to see','Build tailored views per person','Connect the process end-to-end'],
+                tabLabel:'Campaigns',
+                headers:['','Campaign','Channel','Status','Owner','Budget','Launch Date'],
+                roles:[
+                    { id:'cmo',            label:'CMO',           color:'#dc2626', desc:'High-level status of key campaigns',        viewType:'summary'  },
+                    { id:'strategy',       label:'Strategy',      color:'#7c3aed', desc:'Pipeline of future & planned work',         viewType:'pipeline' },
+                    { id:'creative-lead',  label:'Creative Lead', color:'#d97706', desc:'Triage inflight creative requests',         viewType:'triage'   },
+                    { id:'creative',       label:'Creative',      color:'#059669', desc:'My assigned campaigns and tasks',           viewType:'mywork'   },
+                ],
+                rows:[
+                    [1,'Q3 Brand Refresh','Multi-channel',{cls:'in-progress',label:'In Progress'},'Sarah K.','$45,000','Jul 1'],
+                    [2,'Product Launch v2.0','Email + Social',{cls:'todo',label:'Planning'},'Chris Y.','$22,000','Aug 15'],
+                    [3,'Partner Co-Marketing','Paid + SEO',{cls:'proposal',label:'Awaiting Brief'},'Lee P.','$18,500','Sep 1'],
+                    [4,'Holiday Promo 2026','Email',{cls:'todo',label:'Draft'},'Sam K.','$12,000','Nov 1'],
+                    [5,'Analyst Relations','PR',{cls:'done',label:'Live'},'Sarah K.','$8,000','May 1'],
+                ]
+            };
             if (t.includes('dog')||t.includes('pet')||t.includes('groom')||t.includes('daycare')||t.includes('day care')||t.includes('kennel')||t.includes('boarding')) return {
                 name:'Dog Grooming App',
                 workflows:['Manage client bookings','Track pet records','Send appointment reminders','Process payments'],
@@ -3763,25 +3783,6 @@
                     [3,'OfficeSupply Co.','Facilities',{cls:'done',label:'Active'},'Lee P.','Jan 15'],
                     [4,'FastShip Logistics','Logistics',{cls:'todo',label:'Pending'},'Chris Y.','—'],
                     [5,'SecureGuard','Security',{cls:'negotiation',label:'Negotiating'},'Tom W.','—'],
-                ]
-            };
-            if (t.includes('marketing')||t.includes('campaign')||t.includes('brief')||t.includes('launch')) return {
-                name:'Campaign Hub',
-                workflows:['Identify key stakeholders','Define what each role needs to see','Build tailored views per person','Connect the process end-to-end'],
-                tabLabel:'Campaigns',
-                headers:['','Campaign','Channel','Status','Owner','Budget','Launch Date'],
-                roles:[
-                    { id:'cmo',            label:'CMO',           color:'#dc2626', desc:'High-level status of key campaigns',        viewType:'summary'  },
-                    { id:'strategy',       label:'Strategy',      color:'#7c3aed', desc:'Pipeline of future & planned work',         viewType:'pipeline' },
-                    { id:'creative-lead',  label:'Creative Lead', color:'#d97706', desc:'Triage inflight creative requests',         viewType:'triage'   },
-                    { id:'creative',       label:'Creative',      color:'#059669', desc:'My assigned campaigns and tasks',           viewType:'mywork'   },
-                ],
-                rows:[
-                    [1,'Q3 Brand Refresh','Multi-channel',{cls:'in-progress',label:'In Progress'},'Sarah K.','$45,000','Jul 1'],
-                    [2,'Product Launch v2.0','Email + Social',{cls:'todo',label:'Planning'},'Chris Y.','$22,000','Aug 15'],
-                    [3,'Partner Co-Marketing','Paid + SEO',{cls:'proposal',label:'Awaiting Brief'},'Lee P.','$18,500','Sep 1'],
-                    [4,'Holiday Promo 2026','Email',{cls:'todo',label:'Draft'},'Sam K.','$12,000','Nov 1'],
-                    [5,'Analyst Relations','PR',{cls:'done',label:'Live'},'Sarah K.','$8,000','May 1'],
                 ]
             };
             if (t.includes('incident')||t.includes('outage')||t.includes('it ops')||t.includes('bug')||t.includes('support ticket')) return {
