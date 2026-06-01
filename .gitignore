@@ -1,5 +1,6 @@
-# Ignore everything except the app builder prototype
+# Ignore everything except the app builder prototypes
 *
 !.gitignore
 !asana-tables.html
+!asana-tables-v2.html
 !README.md
