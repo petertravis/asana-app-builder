@@ -2783,7 +2783,8 @@
                 : name.substring(0, 2).toUpperCase();
         }
 
-        let _activeRole = null; // tracks which role is selected in role-based mode
+        let _activeRole = null;   // tracks which role is selected in role-based mode
+        let _activeViewId = null; // tracks which specific view within the active role
 
         function updateCanvasPreviewNav(data) {
             const appName = document.getElementById('builder-app-name')?.textContent || 'My App';
@@ -2837,18 +2838,23 @@
                             mywork:   { label:'My Work',           icon:`<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="width:12px;height:12px"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>` },
                         };
                         return data.roles.map(r => {
-                            const meta = VIEW_META[r.viewType] || { label: r.label, icon: '' };
-                            const initials = r.label.split(' ').map(w=>w[0]).join('').slice(0,2);
-                            const isActive = r.id === _activeRole;
+                            const roleViews = r.views && r.views.length
+                                ? r.views
+                                : [{ id: r.id + '-default', label: (VIEW_META[r.viewType] || {label:r.label}).label, viewType: r.viewType }];
+                            const viewItems = roleViews.map(v => {
+                                const vMeta = VIEW_META[v.viewType] || { label: v.label, icon: '' };
+                                const isActive = v.id === _activeViewId;
+                                return `<div class="cvs-persona-view-item${isActive ? ' active' : ''}" data-sv-role="${r.id}" data-sv-view-id="${v.id}">
+                                    ${vMeta.icon}${v.label}
+                                </div>`;
+                            }).join('');
                             return `<div class="cvs-persona-group">
                                 <div class="cvs-persona-group-header">
                                     <span class="cvs-persona-group-name">${r.label}</span>
                                     <button class="cvs-persona-group-add" title="Add view">+</button>
                                 </div>
                                 <div class="cvs-persona-views">
-                                    <div class="cvs-persona-view-item${isActive ? ' active' : ''}" data-sv-role="${r.id}">
-                                        ${meta.icon}${meta.label}
-                                    </div>
+                                    ${viewItems}
                                 </div>
                             </div>`;
                         }).join('');
@@ -3093,16 +3099,36 @@
         function switchToTableView() { switchToView('records'); }
 
         // ── Role-based view switching (v2) ──────────────────────────────
-        function switchToRole(roleId, data) {
-            if (!data) data = _tableData;
+        // switchToRole(roleId [, viewIdOrData [, data]])
+        // - viewIdOrData: string viewId -OR- the data object (backward compat)
+        function switchToRole(roleId, viewIdOrData, maybeData) {
+            let viewId = null;
+            let data = _tableData;
+            if (typeof viewIdOrData === 'string') {
+                viewId = viewIdOrData;
+                data = maybeData || _tableData;
+            } else if (viewIdOrData && typeof viewIdOrData === 'object') {
+                data = viewIdOrData; // backward compat: second arg was data
+            }
             if (!data || !data.roles) return;
             _activeRole = roleId;
             const role = data.roles.find(r => r.id === roleId);
             if (!role) return;
 
-            // Update active states in sidenav (persona group view items) + tabs
-            document.querySelectorAll('.cvs-persona-view-item[data-sv-role]').forEach(el => {
-                el.classList.toggle('active', el.dataset.svRole === roleId);
+            // Resolve which view to show
+            let activeView = null;
+            if (viewId && role.views) {
+                activeView = role.views.find(v => v.id === viewId);
+            }
+            if (!activeView && role.views && role.views.length) {
+                activeView = role.views[0];
+            }
+            _activeViewId = activeView ? activeView.id : (role.id + '-default');
+            const viewType = activeView ? activeView.viewType : role.viewType;
+
+            // Update active states in sidenav view items
+            document.querySelectorAll('.cvs-persona-view-item[data-sv-view-id]').forEach(el => {
+                el.classList.toggle('active', el.dataset.svViewId === _activeViewId);
             });
             document.querySelectorAll('.cvs-sidenav-item[data-sv-role]').forEach(el => {
                 el.classList.toggle('active', el.dataset.svRole === roleId);
@@ -3117,10 +3143,11 @@
             tableDiv.style.display = 'none';
             alt.style.display = '';
 
-            if (role.viewType === 'summary') renderRoleSummary(data, role, alt);
-            else if (role.viewType === 'pipeline') renderRolePipeline(data, role, alt);
-            else if (role.viewType === 'triage') renderRoleTriage(data, role, alt);
-            else if (role.viewType === 'mywork') renderRoleMyWork(data, role, alt);
+            if (viewType === 'summary')   renderRoleSummary(data, role, alt);
+            else if (viewType === 'pipeline') renderRolePipeline(data, role, alt);
+            else if (viewType === 'triage')   renderRoleTriage(data, role, alt);
+            else if (viewType === 'mywork')   renderRoleMyWork(data, role, alt);
+            else if (viewType === 'dashboard') renderRoleDashboard(data, role, alt);
             else renderRoleTriage(data, role, alt); // fallback
         }
 
@@ -3266,6 +3293,53 @@
             </div>`;
         }
 
+        function renderRoleDashboard(data, role, el) {
+            const rows = data.rows || [];
+            const total = rows.length;
+            const statuses = {};
+            rows.forEach(row => {
+                row.forEach(cell => {
+                    if (cell && typeof cell === 'object' && cell.label) {
+                        statuses[cell.label] = (statuses[cell.label] || 0) + 1;
+                    }
+                });
+            });
+            const kpis = [
+                { label:'Total Campaigns', value: total,                                                                sub: 'All entries' },
+                { label:'In Progress',     value: statuses['In Progress'] || statuses['in-progress'] || Math.floor(total * 0.4), sub: 'Active now' },
+                { label:'Completed',       value: statuses['Done'] || statuses['Completed'] || Math.floor(total * 0.3),          sub: 'This month' },
+            ];
+            el.style.cssText = 'overflow:hidden;display:flex;flex-direction:column;';
+            el.innerHTML = _roleHeader(role, 'Dashboard') +
+            `<div style="flex:1;overflow:auto;padding:16px 20px">
+                <div class="cvs-block-kpi-row" style="margin-bottom:20px">
+                    ${kpis.map(k => `<div class="cvs-block-kpi">
+                        <div class="cvs-block-kpi-label">${k.label}</div>
+                        <div class="cvs-block-kpi-value">${k.value}</div>
+                        <div class="cvs-block-kpi-sub">${k.sub}</div>
+                    </div>`).join('')}
+                </div>
+                <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-weak);margin-bottom:8px">Recent Campaigns</div>
+                <table class="canvas-data-table" style="width:100%">
+                    <thead><tr>${data.headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+                    <tbody>${rows.slice(0,4).map(r => `<tr>${r.map((c,ci) => `<td>${ci===0?c:(c&&typeof c==='object'?`<span class="cbadge ${c.cls||''}">${c.label||''}</span>`:c||'—')}</td>`).join('')}</tr>`).join('')}</tbody>
+                </table>
+            </div>`;
+        }
+
+        // addViewToRole: adds a new view to a role's views array and navigates to it
+        function addViewToRole(roleId, label, viewType) {
+            if (!_tableData || !_tableData.roles) return false;
+            const role = _tableData.roles.find(r => r.id === roleId);
+            if (!role) return false;
+            if (!role.views) role.views = [];
+            const newId = roleId + '-' + viewType + '-' + Date.now();
+            role.views.push({ id: newId, label: label, viewType: viewType });
+            updateCanvasPreviewNav(_tableData); // re-renders sidenav with new item
+            switchToRole(roleId, newId, _tableData); // navigate to the new view
+            return true;
+        }
+
         // addViewTab: adds the view to _canvasViews, re-renders nav, then switches to it
         function addViewTab(label, type) {
             const t = (type === 'list') ? 'board' : type;
@@ -3299,7 +3373,7 @@
         document.addEventListener('click', e => {
             const item = e.target.closest('.cvs-persona-view-item[data-sv-role]');
             if (!item) return;
-            switchToRole(item.dataset.svRole);
+            switchToRole(item.dataset.svRole, item.dataset.svViewId || null);
         });
 
         // Wire up role clicks in sidenav (v2 role mode) — legacy sidenav items
@@ -3763,10 +3837,10 @@
                 tabLabel:'Campaigns',
                 headers:['','Campaign','Channel','Status','Owner','Budget','Launch Date'],
                 roles:[
-                    { id:'cmo',            label:'CMO',           color:'#dc2626', desc:'High-level status of key campaigns',        viewType:'summary'  },
-                    { id:'strategy',       label:'Strategy',      color:'#7c3aed', desc:'Pipeline of future & planned work',         viewType:'pipeline' },
-                    { id:'creative-lead',  label:'Creative Lead', color:'#d97706', desc:'Triage inflight creative requests',         viewType:'triage'   },
-                    { id:'creative',       label:'Creative',      color:'#059669', desc:'My assigned campaigns and tasks',           viewType:'mywork'   },
+                    { id:'cmo',            label:'CMO',           color:'#dc2626', desc:'High-level status of key campaigns',        viewType:'summary',  views:[{id:'cmo-summary',         label:'Executive Summary', viewType:'summary'}]  },
+                    { id:'strategy',       label:'Strategy',      color:'#7c3aed', desc:'Pipeline of future & planned work',         viewType:'pipeline', views:[{id:'strategy-pipeline',   label:'Pipeline',          viewType:'pipeline'}] },
+                    { id:'creative-lead',  label:'Creative Lead', color:'#d97706', desc:'Triage inflight creative requests',         viewType:'triage',   views:[{id:'creative-lead-triage',label:'Triage View',       viewType:'triage'}]   },
+                    { id:'creative',       label:'Creative',      color:'#059669', desc:'My assigned campaigns and tasks',           viewType:'mywork',   views:[{id:'creative-mywork',     label:'My Work',           viewType:'mywork'}]   },
                 ],
                 rows:[
                     [1,'Q3 Brand Refresh','Multi-channel',{cls:'in-progress',label:'In Progress'},'Sarah K.','$45,000','Jul 1'],
@@ -4547,6 +4621,29 @@
                     }
                 }
                 return 'Added a timeline view — records are arranged chronologically with milestone markers.';
+            }
+
+            // ── ADD VIEW TO SPECIFIC ROLE (role-based mode) ──────────────
+            if (_tableData && _tableData.roles && (m.includes('add') || m.includes('create')) && m.includes('view')) {
+                const roleMatch = _tableData.roles.find(r => m.includes(r.label.toLowerCase()));
+                if (roleMatch) {
+                    const vType  = m.includes('dashboard') ? 'dashboard'
+                        : m.includes('board') || m.includes('kanban') ? 'pipeline'
+                        : m.includes('triage') ? 'triage'
+                        : m.includes('timeline') ? 'timeline'
+                        : m.includes('graph') || m.includes('chart') ? 'dashboard'
+                        : m.includes('calendar') ? 'dashboard'
+                        : 'dashboard';
+                    const vLabel = m.includes('dashboard') ? 'Dashboard'
+                        : m.includes('board') || m.includes('kanban') ? 'Board'
+                        : m.includes('triage') ? 'Triage'
+                        : m.includes('timeline') ? 'Timeline'
+                        : m.includes('graph') || m.includes('chart') ? 'Chart'
+                        : m.includes('calendar') ? 'Calendar'
+                        : 'Dashboard';
+                    addViewToRole(roleMatch.id, vLabel, vType);
+                    return `Added a ${vLabel} view under ${roleMatch.label}. Click it in the sidebar to switch to it.`;
+                }
             }
 
             // ── VIEW: DASHBOARD ───────────────────────────────────────
