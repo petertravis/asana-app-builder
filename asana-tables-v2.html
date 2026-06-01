@@ -618,7 +618,73 @@
             border: 1px solid var(--border);
             border-radius: 10px;
             box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+            position: relative; /* needed for detail panel overlay */
         }
+
+        /* ── Campaign detail slide-in panel ── */
+        .cvs-detail-panel {
+            position: absolute; top: 0; right: 0; width: 300px; height: 100%;
+            background: var(--bg); border-left: 1px solid var(--border);
+            box-shadow: -6px 0 20px rgba(0,0,0,0.10);
+            z-index: 50; display: flex; flex-direction: column; overflow: hidden;
+            transform: translateX(100%);
+            transition: transform 260ms cubic-bezier(0.05, 0.4, 0.2, 1);
+        }
+        .cvs-detail-panel.open { transform: translateX(0); }
+        .cvs-detail-panel-header {
+            display: flex; align-items: center; gap: 8px;
+            padding: 10px 12px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+        }
+        .cvs-detail-panel-title {
+            flex: 1; font-size: 13px; font-weight: 600; color: var(--text);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .cvs-detail-panel-close {
+            width: 22px; height: 22px; border-radius: 5px; border: none;
+            background: none; cursor: pointer; display: flex; align-items: center;
+            justify-content: center; color: var(--icon);
+            transition: background var(--duration) var(--ease);
+        }
+        .cvs-detail-panel-close:hover { background: var(--bg-hover); color: var(--text); }
+        .cvs-detail-panel-body { flex: 1; overflow-y: auto; }
+        .cvs-detail-section { padding: 12px 14px; }
+        .cvs-detail-section + .cvs-detail-section { border-top: 1px solid var(--border); }
+        .cvs-detail-section-title {
+            font-size: 10px; font-weight: 700; letter-spacing: .07em;
+            text-transform: uppercase; color: var(--text-weak); margin-bottom: 9px;
+        }
+        .cvs-detail-field { display: flex; align-items: center; gap: 8px; padding: 3px 0; }
+        .cvs-detail-field-label { font-size: 11px; color: var(--text-weak); width: 68px; flex-shrink: 0; }
+        .cvs-detail-field-value { font-size: 12px; color: var(--text); }
+        .cvs-detail-member { display: flex; align-items: center; gap: 9px; padding: 4px 0; }
+        .cvs-detail-member-avatar {
+            width: 26px; height: 26px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 9px; font-weight: 700; color: #fff; flex-shrink: 0;
+        }
+        .cvs-detail-member-name { font-size: 12px; font-weight: 500; color: var(--text); }
+        .cvs-detail-member-role { font-size: 11px; color: var(--text-weak); }
+        .cvs-detail-update { display: flex; gap: 9px; padding: 5px 0; }
+        .cvs-detail-update-dot {
+            width: 6px; height: 6px; border-radius: 50%;
+            background: var(--border-strong); flex-shrink: 0; margin-top: 5px;
+        }
+        .cvs-detail-update-text { font-size: 12px; color: var(--text); line-height: 1.4; }
+        .cvs-detail-update-time { font-size: 11px; color: var(--text-weak); }
+        .cvs-detail-asset {
+            display: flex; align-items: center; gap: 9px;
+            padding: 5px 6px; border-radius: 6px; cursor: pointer;
+        }
+        .cvs-detail-asset:hover { background: var(--bg-hover); }
+        .cvs-detail-asset-icon {
+            width: 28px; height: 28px; border-radius: 6px;
+            display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0;
+        }
+        .cvs-detail-asset-name { font-size: 12px; font-weight: 500; color: var(--text); }
+        .cvs-detail-asset-meta { font-size: 11px; color: var(--text-weak); }
+        /* Cards get pointer + lift when detail is enabled */
+        .cards-detail-enabled .view-card { cursor: pointer; }
+        .cards-detail-enabled .view-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
 
         /* Col 1 — Mini icon rail (mirrors real Asana rail) */
         .cvs-mini-rail {
@@ -2783,8 +2849,9 @@
                 : name.substring(0, 2).toUpperCase();
         }
 
-        let _activeRole = null;   // tracks which role is selected in role-based mode
-        let _activeViewId = null; // tracks which specific view within the active role
+        let _activeRole = null;       // tracks which role is selected in role-based mode
+        let _activeViewId = null;     // tracks which specific view within the active role
+        let _cardDetailEnabled = false; // whether campaign card detail panels are active
 
         function updateCanvasPreviewNav(data) {
             const appName = document.getElementById('builder-app-name')?.textContent || 'My App';
@@ -3366,6 +3433,111 @@
             return true;
         }
 
+        // ── Campaign detail panel ──────────────────────────────────────────
+        function enableCampaignDetailView() {
+            if (_cardDetailEnabled) return;
+            _cardDetailEnabled = true;
+            // Mark the alt view container so cards get pointer + lift styles
+            const alt = document.getElementById('canvas-view-alt');
+            if (alt) alt.classList.add('cards-detail-enabled');
+            // Create panel DOM (once) inside .canvas-preview-panel
+            if (!document.getElementById('cvs-detail-panel')) {
+                const panel = document.createElement('div');
+                panel.id = 'cvs-detail-panel';
+                panel.className = 'cvs-detail-panel';
+                panel.innerHTML = `
+                    <div class="cvs-detail-panel-header">
+                        <button class="cvs-detail-panel-close" id="cvs-detail-close">
+                            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="width:11px;height:11px"><line x1="2" y1="2" x2="14" y2="14"/><line x1="14" y1="2" x2="2" y2="14"/></svg>
+                        </button>
+                        <div class="cvs-detail-panel-title" id="cvs-detail-title">Campaign</div>
+                        <div id="cvs-detail-status"></div>
+                    </div>
+                    <div class="cvs-detail-panel-body" id="cvs-detail-body"></div>`;
+                const previewPanel = document.querySelector('.canvas-preview-panel');
+                if (previewPanel) previewPanel.appendChild(panel);
+                document.getElementById('cvs-detail-close').addEventListener('click', () => {
+                    panel.classList.remove('open');
+                });
+            }
+        }
+
+        function openCampaignDetail(row, data) {
+            const panel = document.getElementById('cvs-detail-panel');
+            if (!panel) return;
+            const name      = row[1] || 'Campaign';
+            const channel   = row[2] || '—';
+            const status    = row[3]; // {cls, label}
+            const owner     = row[4] || '—';
+            const budget    = row[5] || '—';
+            const launchDate = row[6] || '—';
+
+            document.getElementById('cvs-detail-title').textContent = name;
+            document.getElementById('cvs-detail-status').innerHTML =
+                status ? `<span class="cbadge ${status.cls}">${status.label}</span>` : '';
+
+            const memberNames = ['Sarah K.', 'Chris Y.', 'Lee P.', 'Sam K.'];
+            const roles = (data && data.roles) ? data.roles : [];
+            const teamHTML = roles.map((r, i) => `
+                <div class="cvs-detail-member">
+                    <div class="cvs-detail-member-avatar" style="background:${r.color}">${(memberNames[i]||'?').split(' ').map(w=>w[0]).join('')}</div>
+                    <div>
+                        <div class="cvs-detail-member-name">${memberNames[i] || owner}</div>
+                        <div class="cvs-detail-member-role">${r.label}</div>
+                    </div>
+                </div>`).join('');
+
+            const updatesHTML = [
+                { text: `${owner} updated status to <strong>${status ? status.label : 'active'}</strong>`, time: '2 hours ago' },
+                { text: `Creative brief reviewed and approved`, time: 'Yesterday' },
+                { text: `Design assets uploaded to shared folder`, time: '2 days ago' },
+                { text: `Campaign created with ${channel} channel`, time: '5 days ago' },
+            ].map(u => `
+                <div class="cvs-detail-update">
+                    <div class="cvs-detail-update-dot"></div>
+                    <div>
+                        <div class="cvs-detail-update-text">${u.text}</div>
+                        <div class="cvs-detail-update-time">${u.time}</div>
+                    </div>
+                </div>`).join('');
+
+            const safeName = name.replace(/\s+/g, '_');
+            const assetsHTML = [
+                { bg:'#7c3aed18', color:'#7c3aed', icon:'🎨', name:`${safeName}_Concepts.fig`,  meta:'Figma · 2.4 MB' },
+                { bg:'#dc262618', color:'#dc2626', icon:'📄', name:`Creative_Brief.pdf`,          meta:'PDF · 840 KB'   },
+                { bg:'#05966918', color:'#059669', icon:'🖼',  name:`${safeName}_Hero.png`,        meta:'Image · 1.2 MB' },
+                { bg:'#d9770618', color:'#d97706', icon:'📊', name:`Campaign_Report.pdf`,         meta:'PDF · 560 KB'   },
+            ].map(a => `
+                <div class="cvs-detail-asset">
+                    <div class="cvs-detail-asset-icon" style="background:${a.bg};color:${a.color}">${a.icon}</div>
+                    <div>
+                        <div class="cvs-detail-asset-name">${a.name}</div>
+                        <div class="cvs-detail-asset-meta">${a.meta}</div>
+                    </div>
+                </div>`).join('');
+
+            document.getElementById('cvs-detail-body').innerHTML = `
+                <div class="cvs-detail-section">
+                    <div class="cvs-detail-field"><span class="cvs-detail-field-label">Channel</span><span class="cvs-detail-field-value">${channel}</span></div>
+                    <div class="cvs-detail-field"><span class="cvs-detail-field-label">Owner</span><span class="cvs-detail-field-value">${owner}</span></div>
+                    <div class="cvs-detail-field"><span class="cvs-detail-field-label">Budget</span><span class="cvs-detail-field-value">${budget}</span></div>
+                    <div class="cvs-detail-field"><span class="cvs-detail-field-label">Launch</span><span class="cvs-detail-field-value">${launchDate}</span></div>
+                </div>
+                <div class="cvs-detail-section">
+                    <div class="cvs-detail-section-title">Team &amp; Roles</div>
+                    ${teamHTML || `<div style="font-size:12px;color:var(--text-weak)">No roles defined.</div>`}
+                </div>
+                <div class="cvs-detail-section">
+                    <div class="cvs-detail-section-title">Updates</div>
+                    ${updatesHTML}
+                </div>
+                <div class="cvs-detail-section">
+                    <div class="cvs-detail-section-title">Design Assets</div>
+                    ${assetsHTML}
+                </div>`;
+            panel.classList.add('open');
+        }
+
         // addViewTab: adds the view to _canvasViews, re-renders nav, then switches to it
         function addViewTab(label, type) {
             const t = (type === 'list') ? 'board' : type;
@@ -3417,6 +3589,18 @@
             if (v === 'rules')    switchToView('rules');
             else if (v === 'analytics') switchToView('reports');
             else switchToView(v);
+        });
+
+        // Wire up campaign card clicks for detail panel
+        document.addEventListener('click', e => {
+            if (!_cardDetailEnabled) return;
+            const card = e.target.closest('.view-card');
+            if (!card) return;
+            const allCards = [...document.querySelectorAll('.view-card')];
+            const idx = allCards.indexOf(card);
+            if (idx >= 0 && _tableData && _tableData.rows[idx]) {
+                openCampaignDetail(_tableData.rows[idx], _tableData);
+            }
         });
 
         // ── Build tab / Chat tab switching ──────────────────────────
@@ -4132,6 +4316,15 @@
             _lastCommandApplied = true; // real change unless fallback overrides
             const m = msg.toLowerCase().trim();
             const color = detectColor(m);
+
+            // ── CAMPAIGN CARD DETAIL PANEL ────────────────────────────
+            if ((m.includes('click') && (m.includes('card') || m.includes('campaign'))) ||
+                (m.includes('detail') && (m.includes('card') || m.includes('campaign') || m.includes('panel') || m.includes('view'))) ||
+                m.includes('clickable card') || m.includes('more detail') || m.includes('see detail') ||
+                m.includes('team member') || m.includes('design asset') || m.includes('campaign detail')) {
+                enableCampaignDetailView();
+                return 'Campaign cards are now clickable — tap any card to open a detail panel showing team members &amp; roles, recent updates, and design assets.';
+            }
 
             // ── DARK MODE ──────────────────────────────────────────────
             if (m.includes('dark mode') || m.includes('dark theme') || (m.includes('dark') && (m.includes('make') || m.includes('switch') || m.includes('use') || m.includes('turn')))) {
