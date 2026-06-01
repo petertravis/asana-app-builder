@@ -2838,6 +2838,8 @@
                             mywork:    { label:'My Work',           icon:`<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="width:12px;height:12px"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>` },
                             dashboard: { label:'Dashboard',         icon:`<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="width:12px;height:12px"><rect x="1" y="1" width="6" height="9" rx="1"/><rect x="9" y="1" width="6" height="4" rx="1"/><rect x="9" y="7" width="6" height="8" rx="1"/><rect x="1" y="12" width="6" height="3" rx="1"/></svg>` },
                             timeline:  { label:'Timeline',          icon:`<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="width:12px;height:12px"><line x1="2" y1="4" x2="14" y2="4"/><line x1="2" y1="8" x2="14" y2="8"/><line x1="2" y1="12" x2="14" y2="12"/><circle cx="5" cy="4" r="1.5" fill="currentColor" stroke="none"/><circle cx="10" cy="8" r="1.5" fill="currentColor" stroke="none"/><circle cx="7" cy="12" r="1.5" fill="currentColor" stroke="none"/></svg>` },
+                            cards:     { label:'Card View',         icon:`<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="width:12px;height:12px"><rect x="1" y="1" width="6" height="7" rx="1.5"/><rect x="9" y="1" width="6" height="7" rx="1.5"/><rect x="1" y="9" width="6" height="6" rx="1.5"/><rect x="9" y="9" width="6" height="6" rx="1.5"/></svg>` },
+                            board:     { label:'Board',             icon:`<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="width:12px;height:12px"><rect x="1" y="2" width="4" height="12" rx="1"/><rect x="6.5" y="2" width="4" height="8" rx="1"/><rect x="12" y="2" width="3" height="5" rx="1"/></svg>` },
                         };
                         return data.roles.map(r => {
                             const roleViews = r.views && r.views.length
@@ -3145,11 +3147,13 @@
             tableDiv.style.display = 'none';
             alt.style.display = '';
 
-            if (viewType === 'summary')   renderRoleSummary(data, role, alt);
-            else if (viewType === 'pipeline') renderRolePipeline(data, role, alt);
-            else if (viewType === 'triage')   renderRoleTriage(data, role, alt);
-            else if (viewType === 'mywork')   renderRoleMyWork(data, role, alt);
+            if (viewType === 'summary')        renderRoleSummary(data, role, alt);
+            else if (viewType === 'pipeline')  renderRolePipeline(data, role, alt);
+            else if (viewType === 'triage')    renderRoleTriage(data, role, alt);
+            else if (viewType === 'mywork')    renderRoleMyWork(data, role, alt);
             else if (viewType === 'dashboard') renderRoleDashboard(data, role, alt);
+            else if (viewType === 'cards')     renderRoleCards(data, role, alt);
+            else if (viewType === 'board')     renderRoleBoard(data, role, alt);
             else renderRoleTriage(data, role, alt); // fallback
         }
 
@@ -3327,6 +3331,26 @@
                     <tbody>${rows.slice(0,4).map(r => `<tr>${r.map((c,ci) => `<td>${ci===0?c:(c&&typeof c==='object'?`<span class="cbadge ${c.cls||''}">${c.label||''}</span>`:c||'—')}</td>`).join('')}</tr>`).join('')}</tbody>
                 </table>
             </div>`;
+        }
+
+        function renderRoleCards(data, role, el) {
+            el.style.cssText = 'overflow:hidden;display:flex;flex-direction:column;';
+            const header = _roleHeader(role, 'Card view');
+            const wrap = document.createElement('div');
+            wrap.style.cssText = 'flex:1;overflow:auto;';
+            el.innerHTML = header;
+            el.appendChild(wrap);
+            renderCardView(data, wrap);
+        }
+
+        function renderRoleBoard(data, role, el) {
+            el.style.cssText = 'overflow:hidden;display:flex;flex-direction:column;';
+            const header = _roleHeader(role, 'Board view');
+            const wrap = document.createElement('div');
+            wrap.style.cssText = 'flex:1;overflow:auto;';
+            el.innerHTML = header;
+            el.appendChild(wrap);
+            renderBoardView(data, wrap);
         }
 
         // addViewToRole: adds a new view to a role's views array and navigates to it
@@ -4328,6 +4352,16 @@
             const wantsTable = m.includes('table') || m.includes('spreadsheet') || m.includes('grid');
 
             if ((m.includes('add') || m.includes('create') || m.includes('show') || m.includes('switch') || m.includes('view as') || m.includes('display')) && (wantsCard || wantsBoard || wantsList || wantsTable)) {
+                // In role-based mode, if a role name appears, add a sidenav item instead
+                if (_tableData && _tableData.roles) {
+                    const roleMatch = _tableData.roles.find(r => m.includes(r.label.toLowerCase()));
+                    if (roleMatch) {
+                        const vType  = wantsCard ? 'cards' : wantsBoard ? 'board' : wantsList ? 'board' : 'records';
+                        const vLabel = wantsCard ? 'Card View' : wantsBoard ? 'Board' : wantsList ? 'List' : 'Table';
+                        addViewToRole(roleMatch.id, vLabel, vType);
+                        return `Added a ${vLabel} under ${roleMatch.label} — click it in the sidebar to explore it.`;
+                    }
+                }
                 if (wantsTable) {
                     switchToTableView();
                     return 'Switched to the table view.';
