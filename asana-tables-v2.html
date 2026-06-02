@@ -2603,8 +2603,9 @@
                             <div class="cvs-sidenav" id="cvs-sidenav">
                                 <!-- populated by updateCanvasPreviewNav() -->
                             </div>
-                            <!-- ── Right area: topbar + content (Col 3) ── -->
+                            <!-- ── Right area: role header + topbar + content (Col 3) ── -->
                             <div class="cvs-right-area">
+                                <div id="cvs-role-header-slot" style="display:none"></div>
                                 <div class="cvs-app-topbar">
                                     <div class="cvs-app-tabs" id="cvs-app-tabs">
                                         <button class="cvs-app-tab active" data-view-type="records">Records</button>
@@ -3247,6 +3248,7 @@
 
         function switchToView(type) {
             if (!_tableData) return;
+            _hideRoleHeaderSlot(); // clear role header when navigating standard views
             const t = (type === 'list') ? 'board' : (type || 'records');
             _setCvsActiveTab(t);
             const tableDiv = document.getElementById('canvas-view-table');
@@ -3319,6 +3321,29 @@
                 el.classList.toggle('active', el.dataset.roleId === roleId);
             });
 
+            // Populate the role header slot (sits above the filter topbar)
+            const subtitleMap = {
+                summary:   'Executive summary · read-only',
+                pipeline:  'Future & planned campaigns · strategy access',
+                triage:    'All inflight requests · triage access',
+                mywork:    'Your assigned work · limited access',
+                dashboard: 'Dashboard',
+                cards:     'Card view',
+                board:     'Board view',
+            };
+            const subtitle = subtitleMap[viewType] || viewType;
+            const slot = document.getElementById('cvs-role-header-slot');
+            if (slot) {
+                slot.style.display = '';
+                slot.innerHTML = `<div style="display:flex;align-items:center;gap:10px;padding:14px 20px 12px;border-bottom:1px solid var(--border)">
+                    <div class="cvs-role-avatar" style="background:${role.color};width:28px;height:28px;border-radius:7px;font-size:11px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700">${role.label.split(' ').map(w=>w[0]).join('').slice(0,2)}</div>
+                    <div>
+                        <div style="font-size:13px;font-weight:600;color:var(--text)">${role.label}</div>
+                        <div style="font-size:11px;color:var(--text-weak)">${subtitle}</div>
+                    </div>
+                </div>`;
+            }
+
             // Show alt view div
             const tableDiv = document.getElementById('canvas-view-table');
             const alt = document.getElementById('canvas-view-alt');
@@ -3335,14 +3360,9 @@
             else renderRoleTriage(data, role, alt); // fallback
         }
 
-        function _roleHeader(role, subtitle) {
-            return `<div style="display:flex;align-items:center;gap:10px;padding:16px 20px 12px;border-bottom:1px solid var(--border);flex-shrink:0">
-                <div class="cvs-role-avatar" style="background:${role.color};width:28px;height:28px;border-radius:7px;font-size:11px">${role.label.split(' ').map(w=>w[0]).join('').slice(0,2)}</div>
-                <div>
-                    <div style="font-size:13px;font-weight:600;color:var(--text)">${role.label}</div>
-                    <div style="font-size:11px;color:var(--text-weak)">${subtitle}</div>
-                </div>
-            </div>`;
+        function _hideRoleHeaderSlot() {
+            const slot = document.getElementById('cvs-role-header-slot');
+            if (slot) { slot.style.display = 'none'; slot.innerHTML = ''; }
         }
 
         function renderRoleSummary(data, role, el) {
@@ -3356,8 +3376,8 @@
                 return sum + (isNaN(b) ? 0 : b);
             }, 0);
 
-            el.style.cssText = 'overflow-y:auto;display:flex;flex-direction:column;';
-            el.innerHTML = _roleHeader(role, 'Executive summary · read-only') +
+            el.style.cssText = 'overflow-y:auto;display:flex;flex-direction:column;height:100%;';
+            el.innerHTML =
             `<div style="padding:16px 20px;display:flex;flex-direction:column;gap:16px">
                 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
                     <div class="cvs-role-stat"><div class="cvs-role-stat-num">${inprog}</div><div class="cvs-role-stat-label">In Progress</div></div>
@@ -3396,8 +3416,8 @@
                 return 'planning';
             };
 
-            el.style.cssText = 'overflow:hidden;display:flex;flex-direction:column;';
-            el.innerHTML = _roleHeader(role, 'Future & planned campaigns · strategy access') +
+            el.style.cssText = 'overflow:hidden;display:flex;flex-direction:column;height:100%;';
+            el.innerHTML =
             `<div style="flex:1;overflow-x:auto;overflow-y:hidden;padding:16px 20px;display:flex;gap:12px;min-height:0">
                 ${stages.map(stage => {
                     const stageRows = rows.filter(r => getStage(r) === stage.key);
@@ -3418,8 +3438,8 @@
             // Creative Lead: dense table with all fields, triage focus
             const rows = data.rows || [];
             const headers = (data.headers || []).slice(1); // skip row-num col
-            el.style.cssText = 'overflow:hidden;display:flex;flex-direction:column;';
-            el.innerHTML = _roleHeader(role, 'All inflight requests · triage access') +
+            el.style.cssText = 'overflow:hidden;display:flex;flex-direction:column;height:100%;';
+            el.innerHTML =
             `<div style="flex:1;overflow:auto">
                 <table style="width:100%;border-collapse:collapse;font-size:12.5px">
                     <thead>
@@ -3449,8 +3469,8 @@
             const headers = ['Campaign', 'Status', 'Launch Date'];
             const colIdx = [1, 3, 6]; // which columns from raw row to show
 
-            el.style.cssText = 'overflow:hidden;display:flex;flex-direction:column;';
-            el.innerHTML = _roleHeader(role, 'Your assigned work · limited access') +
+            el.style.cssText = 'overflow:hidden;display:flex;flex-direction:column;height:100%;';
+            el.innerHTML =
             `<div style="padding:10px 20px 8px;display:flex;align-items:center;gap:8px">
                 <div style="width:24px;height:24px;border-radius:50%;background:${role.color};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff">SC</div>
                 <span style="font-size:12.5px;font-weight:500;color:var(--text)">Sarah C.</span>
@@ -3493,8 +3513,8 @@
                 { label:'In Progress',     value: statuses['In Progress'] || statuses['in-progress'] || Math.floor(total * 0.4), sub: 'Active now' },
                 { label:'Completed',       value: statuses['Done'] || statuses['Completed'] || Math.floor(total * 0.3),          sub: 'This month' },
             ];
-            el.style.cssText = 'overflow:hidden;display:flex;flex-direction:column;';
-            el.innerHTML = _roleHeader(role, 'Dashboard') +
+            el.style.cssText = 'overflow:hidden;display:flex;flex-direction:column;height:100%;';
+            el.innerHTML =
             `<div style="flex:1;overflow:auto;padding:16px 20px">
                 <div class="cvs-block-kpi-row" style="margin-bottom:20px">
                     ${kpis.map(k => `<div class="cvs-block-kpi">
@@ -3512,21 +3532,19 @@
         }
 
         function renderRoleCards(data, role, el) {
-            el.style.cssText = 'overflow:hidden;display:flex;flex-direction:column;';
-            const header = _roleHeader(role, 'Card view');
+            el.style.cssText = 'overflow:hidden;display:flex;flex-direction:column;height:100%;';
+            el.innerHTML = '';
             const wrap = document.createElement('div');
             wrap.style.cssText = 'flex:1;overflow:auto;';
-            el.innerHTML = header;
             el.appendChild(wrap);
             renderCardView(data, wrap);
         }
 
         function renderRoleBoard(data, role, el) {
-            el.style.cssText = 'overflow:hidden;display:flex;flex-direction:column;';
-            const header = _roleHeader(role, 'Board view');
+            el.style.cssText = 'overflow:hidden;display:flex;flex-direction:column;height:100%;';
+            el.innerHTML = '';
             const wrap = document.createElement('div');
             wrap.style.cssText = 'flex:1;overflow:auto;';
-            el.innerHTML = header;
             el.appendChild(wrap);
             renderBoardView(data, wrap);
         }
